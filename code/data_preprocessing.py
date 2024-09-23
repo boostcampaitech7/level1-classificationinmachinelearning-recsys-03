@@ -6,6 +6,8 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, PowerTransformer, QuantileTransformer
 from scipy import stats
 from imblearn.over_sampling import SMOTE, BorderlineSMOTE, ADASYN, SVMSMOTE
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
 
 ### shift
 
@@ -65,25 +67,42 @@ def rolling_feature(
 ### fill
 
 def fill_feature(
-    df: pd.DataFrame,
+    df: Union[pd.DataFrame, pd.Series],
     method: str,
-) -> List[pd.Series]:
+) -> Union[pd.DataFrame, pd.Series]:
     """
     missingvalue_보간
     Args:
-        df (pd.DataFrame):
+        df: Union[pd.DataFrame, pd.Series]:
         method (str): mean or median
     Returns:
-        List[pd.Series]:
+        Union[pd.DataFrame, pd.Series]: 
+    """
+    
+    if isinstance(df, pd.DataFrame):
+        # 숫자형 변수만 선별
+        numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+        df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean() if method == "mean" else df[numeric_cols].median())
+        return df
+    elif isinstance(df, pd.Series):
+        return df.fillna(df.mean() if method == "mean" else df.median())
+
+def mice_feature(
+    df: pd.DataFrame,
+) -> pd.DataFrame:
+    """
+    missingvalue_보간(mice)
+    Args:
+        df: pd.DataFrame:
+    Returns:
+        pd.DataFrame 
     """
     # 숫자형 변수만 선별
     numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
-
-    if method=="mean":      # 평균
-        df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
-    if method=="median":    # 중앙값
-        df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
-    return df
+    imputer_mice = IterativeImputer(random_state=42)
+    numeric_data = imputer_mice.fit_transform(df[numeric_cols])
+    #df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
+    return pd.DataFrame(numeric_data)
 
 ### augmentation
 
