@@ -44,22 +44,17 @@ def rolling_feature(
         intervals (List[str]): rolling window widths
         funcs (List[str]): aggregation functions e.g. ["mean", "median", "max"]
         **params: more input for rolling
-        Returns:
+    Returns:
         pd.DataFrame
     """
     # 리스트 컴프리헨션 시작: 모든 조합의 rolling 특성 생성
     df_rolling_list = [
-        # 지정된 연속형 변수 컬럼 선택
-        df[conti_col]
-        # rolling 윈도우 적용, 추가 파라미터 전달
-        .rolling(interval, **params)
-        # 지정된 집계 함수 적용
-        .agg({f"{conti_col}": func})
-        # 결과 컬럼 이름 변경
-        .rename({conti_col: f"{conti_col}_{func}_{interval}"}, axis=1)
+        df[conti_col] # 지정된 연속형 변수 컬럼 선택
+        .rolling(interval, **params) # rolling 윈도우 적용, 추가 파라미터 전달
+        .agg({f"{conti_col}": func}) # 지정된 집계 함수 적용
+        .rename({conti_col: f"{conti_col}_{func}_{interval}"}, axis=1) # 결과 컬럼 이름 변경
         for conti_col in conti_cols
         for interval in intervals
         for func in funcs
         ]
-    # 생성된 모든 rolling 특성을 하나의 DataFrame으로 결합하여 반환
-    return pd.concat(df_rolling_list, axis = 1)
+    return pd.concat(df_rolling_list, axis = 1) # 생성된 모든 rolling 특성을 하나의 DataFrame으로 결합하여 반환
