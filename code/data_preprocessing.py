@@ -1,8 +1,9 @@
 import os
-from typing import List, Dict
+from typing import List, Dict, Tuple, Union
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
+from imblearn.over_sampling import SMOTE, BorderlineSMOTE, ADASYN, SVMSMOTE
 
 ### shift
 
@@ -81,3 +82,25 @@ def fill_feature(
     if method=="median":    # 중앙값
         df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
     return df
+
+### augmentation
+
+def augmentation_feature(
+    x_train: pd.DataFrame,
+    y_train: pd.Series,
+    strategy: str = "SMOTE",
+    sampling_strategy: str = "auto",
+) -> Tuple[pd.DataFrame, pd.Series]:
+    if strategy == "SMOTE":
+        sampler = SMOTE(sampling_strategy=sampling_strategy)
+    elif strategy == "BorderlineSMOTE":
+        sampler = BorderlineSMOTE(sampling_strategy=sampling_strategy)
+    elif strategy == "ADASYN":
+        sampler = ADASYN(sampling_strategy=sampling_strategy)
+    elif strategy == "SVMSMOTE":
+        sampler = SVMSMOTE(sampling_strategy=sampling_strategy)
+    else:
+        raise ValueError(f"Unknown strategy: {strategy}")
+
+    x_resampled, y_resampled = sampler.fit_resample(x_train, y_train)
+    return x_resampled, y_resampled
