@@ -3,6 +3,8 @@ from typing import List, Dict, Tuple, Union
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, PowerTransformer, QuantileTransformer
+from scipy import stats
 from imblearn.over_sampling import SMOTE, BorderlineSMOTE, ADASYN, SVMSMOTE
 
 ### shift
@@ -104,3 +106,119 @@ def augmentation_feature(
 
     x_resampled, y_resampled = sampler.fit_resample(x_train, y_train)
     return x_resampled, y_resampled
+
+### normalization
+
+def standardize_feature(
+    df: pd.DataFrame,
+    conti_cols: List[str]
+) -> pd.DataFrame:
+    """
+    데이터를 평균이 0이고 표준편차가 1이 되도록 변환 (Standard Scaling, Z-score Normalization)
+    Args:
+        df (pd.DataFrame)
+        conti_cols (List[str]): continuous colnames
+    Returns:
+        pd.DataFrame
+    """
+    scaler = StandardScaler() # Standard Scaler 객체 생성
+    scaled_data = scaler.fit_transform(df[conti_cols]) # 데이터 스케일링 적용
+    scaled_df = pd.DataFrame(scaled_data, columns=conti_cols)
+
+    return scaled_df
+
+def normalize_feature(
+    df: pd.DataFrame,
+    conti_cols: List[str]
+) -> pd.DataFrame:
+    """
+    데이터를 [0, 1] 범위로 변환 (Min-Max Scaling)
+    Args:
+        df (pd.DataFrame)
+        conti_cols (List[str]): continuous colnames
+    Returns:
+        pd.DataFrame
+    """
+    scaler = MinMaxScaler() # Min-Max Scaler 객체 생성
+    scaled_data = scaler.fit_transform(df[conti_cols]) # 데이터 스케일링 적용
+    scaled_df = pd.DataFrame(scaled_data, columns=conti_cols)
+
+    return scaled_df
+
+def log_transform_feature(
+    df: pd.DataFrame,
+    conti_cols: List[str]
+) -> pd.DataFrame:
+    """
+    로그 함수를 적용해 *양수*인 데이터 분포 정규화 (0과 음수는 NaN 처리)
+    Args:
+        df (pd.DataFrame)
+        conti_cols (List[str]): continuous colnames
+    Returns:
+        pd.DataFrame
+    """
+    trans_df = df[conti_cols].copy()
+
+    # 로그 변환 적용: 음수 및 0은 NaN으로 처리
+    for col in conti_cols:
+        trans_df[col] = np.where(trans_df[col] > 0, np.log(trans_df[col]), np.nan)
+
+    return trans_df
+
+def box_cox_transform_feature(
+    df: pd.DataFrame,
+    conti_cols: List[str]
+) -> pd.DataFrame:
+    """
+    Box-Cox 변환 적용해 *양수*인 데이터 분포 정규화 (전처리 후 사용 필요)
+    Args:
+        df (pd.DataFrame)
+        conti_cols (List[str]): continuous colnames
+    Returns:
+        pd.DataFrame
+    """
+    trans_df = df[conti_cols].copy()
+
+    # Box-Cox 변환 적용
+    for col in conti_cols:
+        if (trans_df[col] > 0).all():
+            trans_df[col] = stats.boxcox(trans_df[col])[0]
+
+    return trans_df
+
+def power_transform_feature(
+    df: pd.DataFrame,
+    conti_cols: List[str]
+) -> pd.DataFrame:
+    """
+    거듭제곱 변환
+    Args:
+        df (pd.DataFrame)
+        conti_cols (List[str]): continuous colnames
+    Returns:
+        pd.DataFrame
+    """
+    transformer = PowerTransformer() # Power Transformer 객체 생성
+    trans_data = transformer.fit_transform(df[conti_cols]) # 거듭제곱 변환
+    trans_df = pd.DataFrame(trans_data, columns=conti_cols, index=df.index)
+
+    return trans_df
+
+def quantile_transform_feature(
+    df: pd.DataFrame,
+    conti_cols: List[str]
+) -> pd.DataFrame:
+    """
+    분위수 변환
+    Args:
+        df (pd.DataFrame)
+        conti_cols (List[str]): continuous colnames
+    Returns:
+        pd.DataFrame
+    """
+    # Quantile Transformer 객체 생성
+    transformer = QuantileTransformer(output_distribution='normal') # output_distribution은 어떤 분포를 따를 지
+    trans_data = transformer.fit_transform(df[conti_cols])
+    trans_df = pd.DataFrame(trans_data, columns=conti_cols, index=df.index)
+
+    return trans_df
