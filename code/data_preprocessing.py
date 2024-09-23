@@ -58,3 +58,28 @@ def rolling_feature(
         for func in funcs
         ]
     return pd.concat(df_rolling_list, axis = 1) # 생성된 모든 rolling 특성을 하나의 DataFrame으로 결합하여 반환
+
+### fill
+
+def fill_feature(
+    df: pd.DataFrame,
+    method: str,
+) -> List[pd.Series]:
+    """
+    missingvalue_보간
+    Args:
+        df (pd.DataFrame):
+        method (str): mean or median
+
+    Returns:
+        List[pd.Series]:
+    """
+
+    # 숫자형 변수만 선별
+    numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+
+    if method=="mean":      # 평균
+        df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
+    if method=="median":    # 중앙값
+        df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
+    return df
