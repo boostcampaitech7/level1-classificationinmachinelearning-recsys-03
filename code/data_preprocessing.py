@@ -8,6 +8,8 @@ from scipy import stats
 from imblearn.over_sampling import SMOTE, BorderlineSMOTE, ADASYN, SVMSMOTE
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
+from sklearn.experimental import enable_hist_gradient_boosting
+from sklearn.ensemble import HistGradientBoostingRegressor
 
 ### shift
 
@@ -99,10 +101,11 @@ def mice_feature(
     """
     # 숫자형 변수만 선별
     numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
-    imputer_mice = IterativeImputer(random_state=42)
-    numeric_data = imputer_mice.fit_transform(df[numeric_cols])
-    #df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
-    return pd.DataFrame(numeric_data)
+    # HistGradientBoostingRegressor 사용
+    imputer = IterativeImputer(estimator=HistGradientBoostingRegressor())
+    df_imputed_array = imputer.fit_transform(df[numeric_cols])
+    df[numeric_cols]=pd.DataFrame(df_imputed_array, columns=numeric_cols)
+    return df
 
 ### augmentation
 
