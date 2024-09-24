@@ -142,7 +142,7 @@ def standardize_feature(
     """
     scaler = StandardScaler() # Standard Scaler 객체 생성
     scaled_data = scaler.fit_transform(df[conti_cols]) # 데이터 스케일링 적용
-    scaled_df = pd.DataFrame(scaled_data, columns=conti_cols)
+    scaled_df = pd.DataFrame(scaled_data, columns=conti_cols, index=df.index)
 
     return scaled_df
 
@@ -160,7 +160,7 @@ def normalize_feature(
     """
     scaler = MinMaxScaler() # Min-Max Scaler 객체 생성
     scaled_data = scaler.fit_transform(df[conti_cols]) # 데이터 스케일링 적용
-    scaled_df = pd.DataFrame(scaled_data, columns=conti_cols)
+    scaled_df = pd.DataFrame(scaled_data, columns=conti_cols, index=df.index)
 
     return scaled_df
 
