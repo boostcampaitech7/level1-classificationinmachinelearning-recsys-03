@@ -10,6 +10,8 @@ from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.experimental import enable_hist_gradient_boosting
 from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
+
 
 ### shift
 
@@ -102,9 +104,10 @@ def mice_feature(
     # 숫자형 변수만 선별
     numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
     # HistGradientBoostingRegressor 사용
-    imputer = IterativeImputer(estimator=HistGradientBoostingRegressor())
+    imputer = IterativeImputer(estimator=LinearRegression())
     df_imputed_array = imputer.fit_transform(df[numeric_cols])
-    df[numeric_cols]=pd.DataFrame(df_imputed_array, columns=numeric_cols)
+    imputed_df=pd.DataFrame(df_imputed_array, columns=numeric_cols)
+    df.loc[:, numeric_cols] = imputed_df.values
     return df
 
 ### augmentation
