@@ -8,6 +8,8 @@ from scipy import stats
 from imblearn.over_sampling import SMOTE, BorderlineSMOTE, ADASYN, SVMSMOTE
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
+from sklearn.experimental import enable_hist_gradient_boosting
+from sklearn.ensemble import HistGradientBoostingRegressor
 
 ### shift
 
@@ -99,10 +101,11 @@ def mice_feature(
     """
     # 숫자형 변수만 선별
     numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
-    imputer_mice = IterativeImputer(random_state=42)
-    numeric_data = imputer_mice.fit_transform(df[numeric_cols])
-    #df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
-    return pd.DataFrame(numeric_data)
+    # HistGradientBoostingRegressor 사용
+    imputer = IterativeImputer(estimator=HistGradientBoostingRegressor())
+    df_imputed_array = imputer.fit_transform(df[numeric_cols])
+    df[numeric_cols]=pd.DataFrame(df_imputed_array, columns=numeric_cols)
+    return df
 
 ### augmentation
 
@@ -142,7 +145,7 @@ def standardize_feature(
     """
     scaler = StandardScaler() # Standard Scaler 객체 생성
     scaled_data = scaler.fit_transform(df[conti_cols]) # 데이터 스케일링 적용
-    scaled_df = pd.DataFrame(scaled_data, columns=conti_cols)
+    scaled_df = pd.DataFrame(scaled_data, columns=conti_cols, index=df.index)
 
     return scaled_df
 
@@ -160,7 +163,7 @@ def normalize_feature(
     """
     scaler = MinMaxScaler() # Min-Max Scaler 객체 생성
     scaled_data = scaler.fit_transform(df[conti_cols]) # 데이터 스케일링 적용
-    scaled_df = pd.DataFrame(scaled_data, columns=conti_cols)
+    scaled_df = pd.DataFrame(scaled_data, columns=conti_cols, index=df.index)
 
     return scaled_df
 
