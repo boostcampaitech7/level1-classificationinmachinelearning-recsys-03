@@ -23,8 +23,8 @@
 {level1-classificationinmachinelearning-recsys-03}
 │
 ├── code
-│   ├── Final_Ensemble_V2.ipynb
-│   ├── Final_Ensemble_test.ipynb
+│   ├── Final_Ensemble_V2.ipynb         # 피처 통일(LGB), optuna O
+│   ├── Final_Ensemble_test.ipynb       # 피처 통일(EDA), optuna O
 │   ├── data_preprocessing.py
 │   └── requirements.txt
 │
