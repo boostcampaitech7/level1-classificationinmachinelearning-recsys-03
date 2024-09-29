@@ -5,8 +5,8 @@
 
   과거에는 접근조차 어려웠던 분야에서도 인공지능과 머신러닝의 발전으로 모델이 훌륭한 성과를 내고 있다. 만약 대표적인 암호화폐인 비트코인의 가격 등락 예측이 정확하게 이뤄진다면, 투자자들의 투자 전략 수립에 큰 도움이 될 수 있고, 또한 모델 개발을 통해 얻어진 인사이트는 다른 금융 상품의 예측 모델 개발에도 기여할 수 있다.
 
-- Objective
-    - **비트코인의 다음 시점(한 시간 뒤)에서의 가격 등락 예측**
+- Objective : 
+  **비트코인의 다음 시점(한 시간 뒤)에서의 가격 등락 예측**
 
 <br></br>
 ## 👨‍👩‍👧‍👦 팀 소개 👨‍👩‍👧‍👦
@@ -42,7 +42,7 @@
     ├── Ensemble_all_Final.ipynb        # 파이프라인으로 피처 제공, optuna O
     ├── Ensemble_all_RandomForest.ipynb # 피처 통일, RF 추가한 앙상블
     ├── Ensemble_Stacking.ipynb         # 스태킹 앙상블
-    ├── Ensemble_all_Optuna.ipynb       # 피처 통일(LGB), optuna O
+    ├── Ensemble_all_Optuna.ipynb       # 피처 통일, optuna O
     ├── Ensemble_all_Search.ipynb       # 피처 통일, optuna X 
     ├── Ensemble_each.ipynb             # 각 모델별로 피처 선택
     ├── LightGBM.ipynb                  # LGB 베이스라인
@@ -78,11 +78,11 @@ pip install -r requirements.txt
   - branch명 형식은 `EDA-자기이름` 으로 작성 ex) EDA-TaroSin
   - 파일명 형식은 `name_EDA` 으로 작성 ex) TaroSin_EDA
 - 데이터 전처리팀
-  - branch명의 형식 `data/기능이름` 으로 작성 ex) data/rolling, data/sort $\cdots$
+  - branch명의 형식 `data-기능이름` 으로 작성 ex) data-rolling, data-sort $\cdots$
   - `data_preprocessing.py` 파일 내에 함수 추가
 - 모델팀
-  - branch명의 형식 `model/기능이름`으로 작성 ex) model/LSTM, model/LightGBM $\cdots$
-  - 파일명 형식 `모델이름_버전` 으로 작성 ex) XGBoost_optuna.ipynb
+  - branch명의 형식 `model-기능이름`으로 작성 ex) model-LightGBM $\cdots$
+  - 파일명 형식 `모델이름_버전` 으로 작성 ex) XGBoost_Optuna.ipynb
 - `master(main) Branch`에 Pull request를 하는 것이 아닌, `model Branch` 또는 `data Branch`에 Pull request 요청
 - commit을 할 경우 어떤 부분을 수정하였는지 작성
     ```bash
